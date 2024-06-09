@@ -1,14 +1,14 @@
 import css from "./LoadMoreBtn.module.css";
 
-function LoadMoreBtn({ handleLoadMoreBtnClick }) {
+function LoadMoreBtn({ handleSeeMoreClick, isFetching }) {
   return (
-    <div className={css.seeMoreBtnWrapper}>
+    <div className={css.loadMoreWrapper}>
       <button
-        className={css.seeMoreBtn}
-        type="button"
-        onClick={handleLoadMoreBtnClick}
+        className={css.button}
+        onClick={handleSeeMoreClick}
+        disabled={isFetching}
       >
-        Load More
+        See More
       </button>
     </div>
   );

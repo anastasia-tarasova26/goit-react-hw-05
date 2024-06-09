@@ -1,17 +1,17 @@
+import { ProgressBar } from "react-loader-spinner";
 import css from "./Loader.module.css";
-import { Blocks } from "react-loader-spinner";
 
 function Loader() {
   return (
     <div className={css.loaderWrapper}>
-      <Blocks
+      <ProgressBar
+        visible={true}
         height="80"
         width="80"
-        color="#17a9e3"
-        ariaLabel="blocks-loading"
+        color="#4fa94d"
+        ariaLabel="progress-bar-loading"
         wrapperStyle={{}}
-        wrapperClass="blocks-wrapper"
-        visible={true}
+        wrapperClass=""
       />
     </div>
   );

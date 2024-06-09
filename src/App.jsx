@@ -1,93 +1,42 @@
-import "./App.css";
-import axios from "axios";
-import React from "react";
-import { useState } from "react";
-import { useEffect } from "react";
-import * as Yup from "yup";
-import { Formik, Form, Field } from "formik";
-import SearchBar from "./components/SearchBar/SearchBar";
-import fetchPhotos from "./fetchPhotos";
-import ImageGallery from "./components/ImageGallery/ImageGallery";
-import ImageModal from "./components/ImageModal/ImageModal";
-import LoadMoreBtn from "./components/LoadMoreBtn/LoadMoreBtn";
-import ErrorMessage from "./ErrorMassage/ErrorMessage";
-import Loader from "./components/Loader/Loader";
+import { Routes, Route, NavLink } from "react-router-dom";
+import React, { Suspense } from "react";
+import {
+  Navigation,
+  MovieCast,
+  MovieReviews,
+  Loader,
+} from "./components/index";
+import {
+  HomePage,
+  MoviesPage,
+  MovieDetailsPage,
+  NotFoundPage,
+} from "./pages/index";
+import css from "./App.module.css";
 
-const App = () => {
-  const [page, setPage] = useState(1);
-  const [query, setQuery] = useState("");
-  const [photos, setPhotos] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-  const [modalIsOpen, setIsOpen] = useState(false);
-  const [modalFilter, setModalFilter] = useState();
-  const [contentForModal] = photos.filter((photo) => photo.id === modalFilter);
-  useEffect(() => {
-    async function searchPictures() {
-      if (query === "") {
-        return;
-      }
-      setLoading(true);
-      try {
-        const apiRequest = await fetchPhotos(query, page);
-        setPhotos((prevState) => [...prevState, ...apiRequest]);
-        setError(false);
-      } catch (error) {
-        setLoading(false);
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    }
-    searchPictures();
-  }, [query, page]);
-
-  function onFormSubmit(searchedWord) {
-    if (query.toLowerCase() !== searchedWord.toLowerCase()) {
-      setPhotos([]);
-      setQuery(searchedWord);
-    }
-    setPage(1);
-  }
-
-  function handleLoadMoreBtnClick() {
-    setPage((prevState) => prevState + 1);
-    setLoading(true);
-  }
-
-  function openModal() {
-    setIsOpen(true);
-  }
-
-  function closeModal() {
-    setIsOpen(false);
-  }
-
-  function createModalContent(id) {
-    setModalFilter(id);
-  }
+export const App = () => {
   return (
     <>
-      <SearchBar onFormSubmit={onFormSubmit} />
-      <main>
-        <ImageGallery
-          modalContent={createModalContent}
-          openModal={openModal}
-          photos={photos}
-        />
-        {error && <ErrorMessage />}
-        {loading && <Loader />}
-        {photos.length > 0 && !loading && (
-          <LoadMoreBtn handleLoadMoreBtnClick={handleLoadMoreBtnClick} />
-        )}
-        <ImageModal
-          modalContent={contentForModal}
-          isOpen={modalIsOpen}
-          closeModal={closeModal}
-        />
-      </main>{" "}
+      <Suspense fallback={<Loader />}>
+        <header className={css.header}>
+          <Navigation />
+        </header>
+        <main>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/movies" element={<MoviesPage />} />
+            <Route path="/movies/:movieId" element={<MovieDetailsPage />}>
+              <Route path="/movies/:movieId/cast" element={<MovieCast />} />
+              <Route
+                path="/movies/:movieId/reviews"
+                element={<MovieReviews />}
+              />
+            </Route>
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </main>
+      </Suspense>
     </>
   );
 };
-
 export default App;
